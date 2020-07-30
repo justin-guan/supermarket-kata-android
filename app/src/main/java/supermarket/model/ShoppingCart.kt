@@ -35,48 +35,13 @@ class ShoppingCart {
         for (p in productQuantities().keys) {
             val quantity = productQuantities[p]!!
             if (offers.containsKey(p)) {
-                val offer = offers[p]!!
+                val offer = offers.getValue(p)
                 val unitPrice = catalog.getUnitPrice(p)
                 val quantityAsInt = quantity.toInt()
-
-                val discount = when (offer.offerType) {
-                    is SpecialOfferType.Requirement -> applyRequirementOffer(offer.offerType, p, offer, quantityAsInt, unitPrice)
-                    is SpecialOfferType.NoRequirement -> applyNoRequirementOffer(p, offer, quantityAsInt, unitPrice)
+                offer.getDiscount(quantityAsInt, unitPrice)?.let {
+                    receipt.addDiscount(it)
                 }
-
-                if (discount != null)
-                    receipt.addDiscount(discount)
             }
-
         }
     }
-
-    private fun applyRequirementOffer(
-        offerType: SpecialOfferType.Requirement,
-        product: Product,
-        offer: Offer,
-        quantity: Int,
-        unitPrice: Double
-    ): Discount? {
-        val requiredQuantity = when (offerType) {
-            SpecialOfferType.Requirement.ThreeForTwo -> 3
-            SpecialOfferType.Requirement.TwoForAmount -> 2
-            SpecialOfferType.Requirement.FiveForAmount -> 5
-        }
-        val discountAmount = if (quantity >= requiredQuantity) {
-            val totalAfterDiscount = offer.argument * (quantity / requiredQuantity) + quantity % requiredQuantity * unitPrice
-            val totalWithoutDiscount = quantity * unitPrice
-            totalWithoutDiscount - totalAfterDiscount
-        } else {
-            return null
-        }
-        return Discount(product, offerType.description, discountAmount)
-    }
-
-    private fun applyNoRequirementOffer(
-        product: Product,
-        offer: Offer,
-        quantity: Int,
-        unitPrice: Double
-    ) = Discount(product, offer.argument.toString() + "% off", quantity * unitPrice * offer.argument / 100.0)
 }
