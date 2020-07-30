@@ -1,7 +1,9 @@
 package supermarket.model
 
-interface SupermarketCatalog {
-    fun addProduct(product: Product, price: Double)
+import currency.model.Currency
 
-    fun getUnitPrice(product: Product): Double
+interface SupermarketCatalog {
+    fun addProduct(product: Product, price: Currency)
+
+    fun getUnitPrice(product: Product): Currency
 }

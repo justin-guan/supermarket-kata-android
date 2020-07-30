@@ -181,4 +181,32 @@ class CurrencyTest {
 
         assertThat(value < value.copy(dollars = 11.dollars), Is(true))
     }
+
+    @Test
+    fun `string representation of money is correct`() {
+        val money = 12.dollars and 11.cents
+
+        assertThat(money.toString(), Is("$12.11"))
+    }
+
+    @Test
+    fun `string representation of money simplifies cents into dollars first`() {
+        val money = 12.dollars and 101.cents
+
+        assertThat(money.toString(), Is("$13.01"))
+    }
+
+    @Test
+    fun `string representation of money shows negative value`() {
+        val money = (-10).dollars
+
+        assertThat(money.toString(), Is("-$10.00"))
+    }
+
+    @Test
+    fun `string representation of cents shows exactly two digits`() {
+        val money = 1.cents
+
+        assertThat(money.toString(), Is("$0.01"))
+    }
 }
