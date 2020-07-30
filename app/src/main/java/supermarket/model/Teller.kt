@@ -1,27 +1,37 @@
 package supermarket.model
 
-import java.util.HashMap
-
 class Teller(private val catalog: SupermarketCatalog) {
-    private val offers = HashMap<Product, Offer>()
+    private val offers = mutableMapOf<Product, Offer>()
 
-    fun addSpecialOffer(offerType: SpecialOfferType, product: Product, argument: Double) {
-        this.offers[product] = Offer(offerType, product)
+    fun addSpecialOffer(offerType: SpecialOfferType, product: Product) {
+        offers[product] = Offer(offerType, product)
     }
 
     fun checksOutArticlesFrom(theCart: ShoppingCart): Receipt {
-        val receipt = Receipt()
-        val productQuantities = theCart.getItems()
-        for (pq in productQuantities) {
-            val p = pq.product
-            val quantity = pq.quantity
-            val unitPrice = this.catalog.getUnitPrice(p)
-            val price = quantity * unitPrice
-            receipt.addProduct(p, quantity, unitPrice, price)
+        return Receipt().apply {
+            addProducts(theCart, catalog)
+            addDiscountsFromOffers(theCart, offers, catalog)
         }
-        theCart.handleOffers(receipt, this.offers, this.catalog)
-
-        return receipt
     }
+}
 
+private fun Receipt.addProducts(cart: ShoppingCart, catalog: SupermarketCatalog) {
+    val productQuantities = cart.getItems()
+    for ((product, quantity) in productQuantities) {
+        val unitPrice = catalog.getUnitPrice(product)
+        val price = quantity * unitPrice
+        addProduct(product, quantity, unitPrice, price)
+    }
+}
+
+private fun Receipt.addDiscountsFromOffers(cart: ShoppingCart, offers: Map<Product, Offer>, catalog: SupermarketCatalog) {
+    cart.getItems().asSequence()
+        .filter { offers.containsKey(it.key) }
+        .map { (product, quantity) ->
+            val offer = offers.getValue(product)
+            val unitPrice = catalog.getUnitPrice(product)
+            offer.getDiscount(quantity.toInt(), unitPrice)
+        }
+        .filterNotNull()
+        .forEach { addDiscount(it) }
 }

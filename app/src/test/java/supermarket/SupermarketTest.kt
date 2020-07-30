@@ -22,7 +22,7 @@ class SupermarketTest {
         cart.addItemQuantity(toothbrush, 1.0)
 
         val teller = Teller(catalog)
-        teller.addSpecialOffer(SpecialOfferType.PercentageDiscount(10.0), toothbrush, 10.0)
+        teller.addSpecialOffer(SpecialOfferType.PercentageDiscount(10.0), toothbrush)
 
         val receipt = teller.checksOutArticlesFrom(cart)
 
