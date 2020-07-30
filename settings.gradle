@@ -1,3 +1,4 @@
+include ':utils'
 include ':currency'
 include ':app'
 rootProject.name = "SupermarketKata"
