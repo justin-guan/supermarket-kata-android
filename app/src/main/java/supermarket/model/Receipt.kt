@@ -1,12 +1,10 @@
 package supermarket.model
 
-import java.util.*
-
 class Receipt {
-    private val items = ArrayList<ReceiptItem>()
-    private val discounts = ArrayList<Discount>()
+    private val items = mutableListOf<ReceiptItem>()
+    private val discounts = mutableListOf<Discount>()
 
-    val totalPrice: Double?
+    val totalPrice: Double
         get() {
             var total = 0.0
             for (item in this.items) {
@@ -23,7 +21,7 @@ class Receipt {
     }
 
     fun getItems(): List<ReceiptItem> {
-        return ArrayList(this.items)
+        return items
     }
 
     fun addDiscount(discount: Discount) {
