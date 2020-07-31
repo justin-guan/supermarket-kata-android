@@ -1,3 +1,5 @@
 package supermarket.model
 
-data class Discount(val product: Product, val description: String, val discountAmount: Double)
+import currency.model.Currency
+
+data class Discount(val product: Product, val description: String, val discountAmount: Currency)

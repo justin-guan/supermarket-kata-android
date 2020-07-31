@@ -1,14 +1,20 @@
 package supermarket.model
 
+import currency.model.Currency
+import currency.model.div
+import currency.model.minus
+import currency.model.plus
+import currency.model.times
+
 sealed class SpecialOfferType {
 
-    abstract fun calculateDiscount(product: Product, purchaseQuantity: Int, unitPrice: Double): Discount?
+    abstract fun calculateDiscount(product: Product, purchaseQuantity: Int, unitPrice: Currency): Discount?
 
-    data class QuantityForAmount(val requiredQuantity: Double, val amount: Double) : SpecialOfferType() {
+    data class QuantityForAmount(val requiredQuantity: Double, val amount: Currency) : SpecialOfferType() {
         override fun calculateDiscount(
             product: Product,
             purchaseQuantity: Int,
-            unitPrice: Double
+            unitPrice: Currency
         ): Discount? {
             val discountAmount = if (purchaseQuantity >= requiredQuantity) {
                 val totalAfterDiscount =
@@ -18,7 +24,8 @@ sealed class SpecialOfferType {
             } else {
                 return null
             }
-            return Discount(product, "$requiredQuantity for $amount", discountAmount)
+            val description = "$requiredQuantity for $amount"
+            return Discount(product, description, discountAmount)
         }
     }
 
@@ -26,7 +33,7 @@ sealed class SpecialOfferType {
         override fun calculateDiscount(
             product: Product,
             purchaseQuantity: Int,
-            unitPrice: Double
+            unitPrice: Currency
         ): Discount? {
             val discountAmount = purchaseQuantity * unitPrice * discountPercentage / 100.0
             return Discount(product, "$discountPercentage% off", discountAmount)

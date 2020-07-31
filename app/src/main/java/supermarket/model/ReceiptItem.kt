@@ -1,3 +1,5 @@
 package supermarket.model
 
-data class ReceiptItem(val product: Product, val quantity: Double, val price: Double, val totalPrice: Double)
+import currency.model.Currency
+
+data class ReceiptItem(val product: Product, val quantity: Double, val price: Currency, val totalPrice: Currency)

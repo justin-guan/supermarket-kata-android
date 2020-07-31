@@ -1,11 +1,18 @@
 package supermarket.model
 
+import currency.model.Currency
+import currency.model.and
+import currency.model.cents
+import currency.model.div
+import currency.model.dollars
+import currency.model.minus
+import currency.model.times
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
 import supermarket.FakeCatalog
 import org.hamcrest.CoreMatchers.`is` as Is
 
-private const val TEST_PRODUCT_PRICE = 10.0
+private val TEST_PRODUCT_PRICE = 9.dollars and 99.cents
 
 class TellerTest {
 
@@ -24,11 +31,11 @@ class TellerTest {
 
         val receipt = teller.checksOutArticlesFrom(cart)
 
-        assertThat(receipt.totalPrice, Is(TEST_PRODUCT_PRICE * productQuantity))
+        assertThat(receipt.totalPrice, Is<Currency>(TEST_PRODUCT_PRICE * productQuantity))
         assertThat(receipt.getDiscounts().isEmpty(), Is(true))
         assertThat(receipt.getItems().size, Is(1))
         with(receipt.getItems().first()) {
-            assertThat(price, Is(TEST_PRODUCT_PRICE))
+            assertThat(price, Is<Currency>(TEST_PRODUCT_PRICE))
             assertThat(product, Is(testProduct))
             assertThat(quantity, Is(productQuantity))
         }
@@ -46,15 +53,18 @@ class TellerTest {
 
         val receipt = teller.checksOutArticlesFrom(cart)
 
-        assertThat(receipt.totalPrice, Is(45.0))
+        val totalPriceBeforeDiscount = productQuantity * TEST_PRODUCT_PRICE
+        val discount = totalPriceBeforeDiscount / 10
+        val expectedPrice = totalPriceBeforeDiscount - discount
+        assertThat(receipt.totalPrice, Is<Currency>(expectedPrice))
         assertThat(receipt.getDiscounts().size, Is(1))
         with(receipt.getDiscounts().first()) {
             assertThat(product, Is(testProduct))
-            assertThat(discountAmount, Is(5.0))
+            assertThat(discountAmount, Is<Currency>(discount))
         }
         assertThat(receipt.getItems().size, Is(1))
         with(receipt.getItems().first()) {
-            assertThat(price, Is(TEST_PRODUCT_PRICE))
+            assertThat(price, Is<Currency>(TEST_PRODUCT_PRICE))
             assertThat(product, Is(testProduct))
             assertThat(quantity, Is(productQuantity))
         }
@@ -72,15 +82,15 @@ class TellerTest {
 
         val receipt = teller.checksOutArticlesFrom(cart)
 
-        assertThat(receipt.totalPrice, Is(30.0))
+        assertThat(receipt.totalPrice, Is<Currency>(29.dollars and 97.cents))
         assertThat(receipt.getDiscounts().size, Is(1))
         with(receipt.getDiscounts().first()) {
             assertThat(product, Is(testProduct))
-            assertThat(discountAmount, Is(20.0))
+            assertThat(discountAmount, Is<Currency>(19.dollars and 98.cents))
         }
         assertThat(receipt.getItems().size, Is(1))
         with(receipt.getItems().first()) {
-            assertThat(price, Is(TEST_PRODUCT_PRICE))
+            assertThat(price, Is<Currency>(TEST_PRODUCT_PRICE))
             assertThat(product, Is(testProduct))
             assertThat(quantity, Is(productQuantity))
         }

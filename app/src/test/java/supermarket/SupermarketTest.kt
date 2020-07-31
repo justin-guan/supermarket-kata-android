@@ -1,5 +1,8 @@
 package supermarket
 
+import currency.model.and
+import currency.model.cents
+import currency.model.dollars
 import org.junit.Test
 import supermarket.model.Product
 import supermarket.model.ProductUnit
@@ -13,9 +16,9 @@ class SupermarketTest {
     fun testSomething() {
         val catalog = FakeCatalog()
         val toothbrush = Product("toothbrush", ProductUnit.Each)
-        catalog.addProduct(toothbrush, 0.99)
+        catalog.addProduct(toothbrush, 99.cents)
         val apples = Product("apples", ProductUnit.Kilo)
-        catalog.addProduct(apples, 1.99)
+        catalog.addProduct(apples, 1.dollars and 99.cents)
 
         val cart = ShoppingCart()
         cart.addItemQuantity(apples, 2.5)
